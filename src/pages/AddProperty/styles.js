@@ -14,7 +14,8 @@ export const Image = styled.div`
 
 export const DropzoneContainer = styled.div`
   border: 3px dashed ${darken(0.1, "#fc6963")};
-  height: 150px;
+  min-height: 120px;
+  max-height: 150px;
   overflow: auto;
   font-size: 16px;
   color: #777777;
@@ -45,10 +46,19 @@ export const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 530px;
+    max-width: 530px;
+    width: 95vw;
+    max-height: 98vh;
     padding: 25px;
+    overflow: hidden;
     .dropzone {
       width: 100%;
+    }
+    h1 {
+      white-space: nowrap;
+      @media (max-width: 382px) {
+        font-size: 24px;
+      }
     }
     input,
     textarea {
@@ -82,8 +92,10 @@ export const Container = styled.div`
       display: flex;
       margin-top: 15px;
       width: 100%;
+      flex-wrap: wrap;
       justify-content: space-around;
       button {
+        margin-top: 3px;
         color: #fff;
         font-size: 16px;
         background: #fc6963;
@@ -97,6 +109,9 @@ export const Container = styled.div`
         transition: 0.3s;
         > * {
           display: inline-block;
+        }
+        @media (max-width: 382px) {
+          width: 100%;
         }
         &:hover {
           background: ${() => darken(0.08, "#fc6963")};
