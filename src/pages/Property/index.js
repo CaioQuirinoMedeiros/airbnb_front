@@ -70,7 +70,7 @@ export default class Property extends Component {
   };
 
   handleCancel = () => {
-    this.props.history.goBack();
+    this.props.history.push("/app");
   };
 
   renderProperty = () => {

@@ -12,6 +12,14 @@ import api from "../../services/api";
 import { Container, DropzoneContainer, Image } from "./styles";
 
 class EditProperty extends Component {
+  static propTypes = {
+    location: PropTypes.shape({
+      state: PropTypes.shape({
+        id: PropTypes.number
+      })
+    }).isRequired
+  };
+
   state = {
     property: { title: "", address: "", description: "", price: 0, images: [] },
     error: "",
