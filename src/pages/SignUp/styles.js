@@ -50,6 +50,7 @@ export const Container = styled.div`
       cursor: pointer;
       display: flex;
       justify-content: center;
+      align-items: center;
       transition: all 0.3s;
       &:hover {
         background: ${darken(0.08, "#fc6963")};
