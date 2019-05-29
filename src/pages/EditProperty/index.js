@@ -39,7 +39,7 @@ class EditProperty extends Component {
       });
     } catch (err) {
       console.log(err);
-      this.setState({ property: null, error: "Something went wrong" });
+      this.setState({ property: null, error: "Algo saiu errado..." });
     } finally {
       this.setState({ loading: false });
     }
@@ -92,7 +92,7 @@ class EditProperty extends Component {
       });
 
       if (!files.length) {
-        this.handleNotification("Móvel editado com sucesso!", "success");
+        this.handleNotification("Imóvel editado com sucesso!", "success");
         this.props.history.push(`/app/property/${id}`);
       }
 
@@ -109,7 +109,7 @@ class EditProperty extends Component {
 
       await api.post(`/properties/${id}/images`, data, config);
 
-      this.handleNotification("Móvel criado com sucesso!", "success");
+      this.handleNotification("Imóvel criado com sucesso!", "success");
       this.props.history.push(`/app/property/${id}`);
     } catch (err) {
       this.handleNotification("Erro ao editar imóvel");

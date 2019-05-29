@@ -123,7 +123,7 @@ class AddProperty extends Component {
 
       await api.post(`/properties/${id}/images`, data, config);
 
-      this.handleNotification("Móvel criado com sucesso!", "success");
+      this.handleNotification("Imóvel criado com sucesso!", "success");
       this.props.history.push("/app");
     } catch (err) {
       this.handleNotification("Erro ao criar imóvel");
