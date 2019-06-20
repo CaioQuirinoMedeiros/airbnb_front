@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 
-import { Container, Images, Image } from "./styles";
+import { Container, Images, Image, PopUp } from "./styles";
 
 import api from "../../services/api";
 import { getId } from "../../services/auth";
@@ -26,7 +26,8 @@ export default class Property extends Component {
 
   state = {
     property: null,
-    loading: false
+    loading: false,
+    confirmationPopUp: false
   };
 
   async componentDidMount() {
@@ -55,6 +56,10 @@ export default class Property extends Component {
         pauseOnFocusLoss: false
       })
     );
+
+  openConfirmationPopUp = () => {
+    this.setState({ confirmationPopUp: true });
+  };
 
   deleteProperty = async () => {
     try {
@@ -104,7 +109,7 @@ export default class Property extends Component {
               >
                 Editar
               </Link>
-              <button onClick={this.deleteProperty}>
+              <button onClick={this.openConfirmationPopUp}>
                 <i className="fa fa-trash" />
               </button>
             </div>
@@ -115,11 +120,24 @@ export default class Property extends Component {
     );
   };
 
+  renderConfirmationPopUp = () => (
+    <PopUp>
+      <h3>Deseja prosseguir?</h3>
+      <div>
+        <button onClick={() => this.setState({ confirmationPopUp: false })}>
+          Não
+        </button>
+        <button onClick={this.deleteProperty}>Sim</button>
+      </div>
+    </PopUp>
+  );
+
   render() {
-    const { loading } = this.state;
+    const { loading, confirmationPopUp } = this.state;
     return (
       <Container>
         {loading ? <p>Carregando</p> : this.renderProperty()}
+        {confirmationPopUp && this.renderConfirmationPopUp()}
       </Container>
     );
   }

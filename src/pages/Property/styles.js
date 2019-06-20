@@ -37,6 +37,7 @@ export const Container = styled.div`
   padding: 25px;
   width: 530px;
   color: #222;
+  position: relative;
   h4 {
     margin-bottom: 10px;
     width: 100%;
@@ -93,6 +94,47 @@ export const Container = styled.div`
     transition: all 0.2s;
     &:hover {
       color: #111;
+    }
+  }
+`;
+
+export const PopUp = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+
+  h3 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  button {
+    text-decoration: none;
+    padding: 15px 25px;
+    margin: 0 15px;
+    color: #fff;
+    font-size: 16px;
+    background: #fc6963;
+    text-align: center;
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    > * {
+      display: inline-block;
+    }
+    &:hover {
+      background: ${() => darken(0.08, "#fc6963")};
     }
   }
 `;
