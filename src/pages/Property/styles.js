@@ -10,6 +10,7 @@ export const Image = styled.div`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  cursor: pointer;
 `;
 
 export const Images = styled.div`
@@ -26,7 +27,6 @@ export const Images = styled.div`
   justify-content: center;
   flex-wrap: wrap;
   background-color: #fff;
-  cursor: pointer;
   transition: all 0.3s;
 `;
 
