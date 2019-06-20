@@ -14,7 +14,7 @@ export const Image = styled.div`
 `;
 
 export const Images = styled.div`
-  border: 1px solid #cdcdcd
+  border: 1px solid #cdcdcd;
   max-height: 150px;
   width: 100%;
   overflow: auto;
