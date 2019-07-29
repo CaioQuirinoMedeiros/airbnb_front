@@ -1,12 +1,15 @@
-import React from "react";
-import Routes from "./routes";
+import React from 'react';
+import { ToastContainer } from 'react-toastify';
 
-import GlobalStyle from "./styles/global";
+import Routes from './routes';
+
+import GlobalStyle from './styles/global';
 
 const App = () => (
   <>
     <GlobalStyle />
     <Routes />
+    <ToastContainer toastClassName="custom_toast" autoClose={2000} hideProgressBar />
   </>
 );
 
