@@ -23,6 +23,7 @@
       { "extensions": [".jsx", ".js"] }
     ],
     "no-console": "off",
+    "no-param-reassign": "off",
     "camelcase": "off"
   }
 }

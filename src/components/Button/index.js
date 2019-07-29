@@ -12,7 +12,11 @@ const CustomButton = ({ children, color, ...props }) => (
 CustomButton.propTypes = {
   children: PropTypes.element.isRequired,
   color: PropTypes.string.isRequired,
-  props: PropTypes.shape().isRequired,
+  props: PropTypes.shape(),
+};
+
+CustomButton.defaultProps = {
+  props: {},
 };
 
 export default CustomButton;

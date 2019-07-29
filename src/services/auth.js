@@ -1,5 +1,5 @@
-export const TOKEN_KEY = "@airbnb-Token";
-export const USER_ID = "@airbnb-ID";
+export const TOKEN_KEY = '@airbnb-Token';
+export const USER_ID = '@airbnb-ID';
 export const isAuthenticated = () => localStorage.getItem(TOKEN_KEY) !== null;
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const getId = () => localStorage.getItem(USER_ID);

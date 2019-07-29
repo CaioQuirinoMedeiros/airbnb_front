@@ -9,8 +9,7 @@ export const Container = styled.div`
   justify-content: center;
   height: 100vh;
 
-  background-image: linear-gradient(rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.92)),
-    url('/background.jpeg');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url('/background.jpeg');
   background-size: cover;
   background-position: center;
 `;
