@@ -1,80 +1,57 @@
-import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
-import querySearch from "stringquery";
-import Dropzone from "react-dropzone";
-import PropTypes from "prop-types";
-import { Form, Input } from "@rocketseat/unform";
-import CurrencyInput from "react-currency-input";
-import * as Yup from "yup";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.min.css";
-import ReactLoading from "react-loading";
+import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
+import querySearch from 'stringquery';
+import Dropzone from 'react-dropzone';
+import PropTypes from 'prop-types';
+import { Form, Input } from '@rocketseat/unform';
+import CurrencyInput from 'react-currency-input';
+import * as Yup from 'yup';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
+import ReactLoading from 'react-loading';
 
-import api from "../../services/api";
+import api from '../../services/api';
 
-import { Container, DropzoneContainer, Image } from "./styles";
+import { Container, DropzoneContainer, Image } from './styles';
 
 class AddProperty extends Component {
   static propTypes = {
     location: PropTypes.shape({
-      search: PropTypes.string
+      search: PropTypes.string,
     }).isRequired,
     history: PropTypes.shape({
-      push: PropTypes.func
-    }).isRequired
+      push: PropTypes.func,
+    }).isRequired,
   };
 
   state = {
     price: 0,
-    error: "",
     files: [],
     latitude: null,
     longitude: null,
-    loading: false
+    loading: false,
   };
 
-  schema = () =>
-    Yup.object().shape({
-      title: Yup.string().required(() =>
-        this.handleNotification("Preencha o título")
-      ),
-      address: Yup.string().required(() =>
-        this.handleNotification("Preencha o endereço")
-      ),
-      description: Yup.string().required(() =>
-        this.handleNotification("Preencha a descrição")
-      )
-    });
-
   componentDidMount() {
-    const params = querySearch(this.props.location.search);
+    const { location, history } = this.props;
+    const params = querySearch(location.search);
 
-    if (
-      !params.hasOwnProperty("latitude") ||
-      !params.hasOwnProperty("longitude")
-    ) {
-      alert("É necessário definir a latitude e longitude para um imóvel.");
-      this.props.history.push("/app");
+    if (!params.latitude || !params.longitude) {
+      history.push('/app');
     }
 
     this.setState({ ...params });
   }
 
-  handleNotification = (error, type = "error") =>
-    this.setState({ error: error }, () =>
-      toast(this.state.error, {
-        type,
-        className: "toast",
-        autoClose: 2000,
-        hideProgressBar: true,
-        pauseOnHover: false,
-        pauseOnFocusLoss: false
-      })
-    );
+  schema = () => Yup.object().shape({
+    title: Yup.string().required(() => toast.error('Preencha o título')),
+    address: Yup.string().required(() => toast.error('Preencha o endereço')),
+    description: Yup.string().required(() => toast.error('Preencha a descrição')),
+  });
 
-  handleDrop = files => {
-    files.map(file => (file.preview = URL.createObjectURL(file)));
-    this.setState({ files: [...this.state.files, ...files] });
+  handleDrop = (dropedFiles) => {
+    dropedFiles.map(file => ({ ...file, preview: URL.createObjectURL(file) }));
+    this.setState(({ files }) => ({ files: [...files, ...dropedFiles] }));
   };
 
   renderFiles = () => {
@@ -91,51 +68,54 @@ class AddProperty extends Component {
     );
   };
 
-  handleSubmit = async formData => {
+  handleSubmit = async (formData) => {
+    const { history } = this.props;
+
     try {
       this.setState({ loading: true });
-      const { price, latitude, longitude, files } = this.state;
+      const {
+        price, latitude, longitude, files,
+      } = this.state;
 
       const {
-        data: { id }
-      } = await api.post("/properties", {
+        data: { id },
+      } = await api.post('/properties', {
         ...formData,
         price,
         latitude,
-        longitude
+        longitude,
       });
 
       if (!files.length) {
-        this.handleNotification("Móvel criado com sucesso!", "success");
-        this.props.history.push("/app");
+        toast.success('Móvel criado com sucesso!');
+        history.push('/app');
       }
 
       const data = new FormData();
-      files.map((file, index) =>
-        data.append(`image[${index}]`, file, file.name)
-      );
+      files.map((file, index) => data.append(`image[${index}]`, file, file.name));
 
       const config = {
         headers: {
-          "content-type": "multipart/form-data"
-        }
+          'content-type': 'multipart/form-data',
+        },
       };
 
       await api.post(`/properties/${id}/images`, data, config);
 
-      this.handleNotification("Imóvel criado com sucesso!", "success");
-      this.props.history.push("/app");
+      toast.success('Imóvel criado com sucesso!');
+      history.push('/app');
     } catch (err) {
-      this.handleNotification("Erro ao criar imóvel");
+      toast.error('Erro ao criar imóvel');
     } finally {
       this.setState({ loading: false });
     }
   };
 
-  handleCancel = e => {
+  handleCancel = (e) => {
+    const { history } = this.props;
     e.preventDefault();
 
-    this.props.history.push("/app");
+    history.push('/app');
   };
 
   handlePriceChange = (event, maskedvalue, floatvalue) => {
@@ -143,7 +123,7 @@ class AddProperty extends Component {
   };
 
   render() {
-    const { loading } = this.state;
+    const { loading, price } = this.state;
     return (
       <Container>
         <Form schema={this.schema()} onSubmit={this.handleSubmit}>
@@ -151,17 +131,12 @@ class AddProperty extends Component {
           <hr />
           <Input placeholder="Título" name="title" />
           <Input placeholder="Endereço" name="address" />
-          <Input
-            multiline
-            rows="5"
-            placeholder="Descrição"
-            name="description"
-          />
+          <Input multiline rows="5" placeholder="Descrição" name="description" />
           <CurrencyInput
             decimalSeparator=","
             thousandSeparator="."
             prefix="R$ "
-            value={this.state.price}
+            value={price}
             onChangeEvent={this.handlePriceChange}
           />
           <Dropzone
@@ -179,13 +154,9 @@ class AddProperty extends Component {
           </Dropzone>
           <div className="actions">
             <button type="submit">
-              {loading ? (
-                <ReactLoading type="bubbles" width={56} />
-              ) : (
-                "Adicionar"
-              )}
+              {loading ? <ReactLoading type="bubbles" width={56} /> : 'Adicionar'}
             </button>
-            <button onClick={this.handleCancel} className="cancel">
+            <button type="button" onClick={this.handleCancel} className="cancel">
               Cancelar
             </button>
           </div>

@@ -1,51 +1,58 @@
-import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
-import Dropzone from "react-dropzone";
-import PropTypes from "prop-types";
-import CurrencyInput from "react-currency-input";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.min.css";
-import ReactLoading from "react-loading";
+import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
+import Dropzone from 'react-dropzone';
+import PropTypes from 'prop-types';
+import CurrencyInput from 'react-currency-input';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
+import ReactLoading from 'react-loading';
 
-import api from "../../services/api";
+import api from '../../services/api';
 
-import { Container, DropzoneContainer, Image } from "./styles";
+import { Container, DropzoneContainer, Image } from './styles';
 
 class EditProperty extends Component {
   static propTypes = {
     location: PropTypes.shape({
       state: PropTypes.shape({
-        id: PropTypes.number
-      })
-    }).isRequired
+        id: PropTypes.number,
+      }),
+    }).isRequired,
   };
 
   state = {
-    property: { title: "", address: "", description: "", price: 0, images: [] },
-    error: "",
+    property: {
+      title: '',
+      address: '',
+      description: '',
+      price: 0,
+      images: [],
+    },
+    error: '',
     loading: false,
-    files: []
+    files: [],
   };
 
   async componentDidMount() {
+    const { location } = this.props;
     try {
-      const { id } = this.props.location.state;
+      const { id } = location.state;
       this.setState({ loading: true });
 
       const { data } = await api.get(`/properties/${id}`);
       this.setState({
         property: { ...data, price: parseFloat(data.price) },
-        error: ""
+        error: '',
       });
     } catch (err) {
       console.log(err);
-      this.setState({ property: null, error: "Algo saiu errado..." });
+      this.setState({ property: null, error: 'Algo saiu errado...' });
     } finally {
       this.setState({ loading: false });
     }
   }
 
-  handleDrop = files => {
+  handleDrop = (files) => {
     files.map(file => (file.preview = URL.createObjectURL(file)));
     this.setState({ files: [...this.state.files, ...files] });
   };
@@ -64,60 +71,58 @@ class EditProperty extends Component {
     );
   };
 
-  handleNotification = (error, type = "error") =>
-    this.setState({ error: error }, () =>
-      toast(this.state.error, {
-        type,
-        className: "toast",
-        autoClose: 2000,
-        hideProgressBar: true,
-        pauseOnHover: false,
-        pauseOnFocusLoss: false
-      })
-    );
+  handleNotification = (error, type = 'error') => this.setState({ error }, () => toast(this.state.error, {
+    type,
+    className: 'toast',
+    autoClose: 2000,
+    hideProgressBar: true,
+    pauseOnHover: false,
+    pauseOnFocusLoss: false,
+  }));
 
-  handleSubmit = async e => {
+  handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       this.setState({ loading: true });
       const { files } = this.state;
-      const { id, title, address, description, price } = this.state.property;
+      const {
+        id, title, address, description, price,
+      } = this.state.property;
 
       await api.put(`/properties/${id}`, {
         title,
         address,
         description,
-        price
+        price,
       });
 
       if (!files.length) {
-        this.handleNotification("Imóvel editado com sucesso!", "success");
+        this.handleNotification('Imóvel editado com sucesso!', 'success');
         this.props.history.push(`/app/property/${id}`);
       }
 
       const data = new FormData();
-      files.map((file, index) =>
-        data.append(`image[${index}]`, file, file.name)
-      );
+      files.map((file, index) => data.append(`image[${index}]`, file, file.name));
 
       const config = {
         headers: {
-          "content-type": "multipart/form-data"
-        }
+          'content-type': 'multipart/form-data',
+        },
       };
 
       await api.post(`/properties/${id}/images`, data, config);
 
-      this.handleNotification("Imóvel criado com sucesso!", "success");
+      this.handleNotification('Imóvel criado com sucesso!', 'success');
       this.props.history.push(`/app/property/${id}`);
     } catch (err) {
-      this.handleNotification("Erro ao editar imóvel");
+      this.handleNotification('Erro ao editar imóvel');
     } finally {
       this.setState({ loading: false });
     }
   };
-  handleCancel = e => {
+
+  handleCancel = (e) => {
     e.preventDefault();
 
     this.props.history.goBack();
@@ -125,7 +130,9 @@ class EditProperty extends Component {
 
   render() {
     const { loading } = this.state;
-    const { title, price, description, address } = this.state.property;
+    const {
+      title, price, description, address,
+    } = this.state.property;
 
     return (
       <Container>
@@ -136,33 +143,30 @@ class EditProperty extends Component {
             placeholder="Título"
             name="title"
             value={title}
-            onChange={e =>
-              this.setState({
-                property: { ...this.state.property, title: e.target.value }
-              })
+            onChange={e => this.setState({
+              property: { ...this.state.property, title: e.target.value },
+            })
             }
           />
           <input
             placeholder="Endereço"
             name="address"
             value={address}
-            onChange={e =>
-              this.setState({
-                property: { ...this.state.property, address: e.target.value }
-              })
+            onChange={e => this.setState({
+              property: { ...this.state.property, address: e.target.value },
+            })
             }
           />
           <textarea
             rows="5"
             placeholder="Descrição"
             name="description"
-            onChange={e =>
-              this.setState({
-                property: {
-                  ...this.state.property,
-                  description: e.target.value
-                }
-              })
+            onChange={e => this.setState({
+              property: {
+                ...this.state.property,
+                description: e.target.value,
+              },
+            })
             }
             value={description}
           />
@@ -171,18 +175,12 @@ class EditProperty extends Component {
             thousandSeparator="."
             prefix="R$ "
             value={price}
-            onChangeEvent={(event, maskedvalue, floatvalue) =>
-              this.setState({
-                property: { ...this.state.property, price: floatvalue }
-              })
+            onChangeEvent={(event, maskedvalue, floatvalue) => this.setState({
+              property: { ...this.state.property, price: floatvalue },
+            })
             }
           />
-          <Dropzone
-            multiple
-            onDrop={this.handleDrop}
-            accept="image/*"
-            className="dropzone"
-          >
+          <Dropzone multiple onDrop={this.handleDrop} accept="image/*" className="dropzone">
             {({ getRootProps, getInputProps }) => (
               <div className="dropzone" {...getRootProps()}>
                 <input {...getInputProps()} />
@@ -192,7 +190,7 @@ class EditProperty extends Component {
           </Dropzone>
           <div className="actions">
             <button type="submit">
-              {loading ? <ReactLoading type="bubbles" width={56} /> : "Salvar"}
+              {loading ? <ReactLoading type="bubbles" width={56} /> : 'Salvar'}
             </button>
             <button onClick={this.handleCancel} className="cancel">
               Cancelar

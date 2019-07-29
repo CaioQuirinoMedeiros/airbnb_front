@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { darken } from "polished";
+import styled from 'styled-components';
+import { darken } from 'polished';
 
 export const Image = styled.div`
   width: 100px;
@@ -13,7 +13,7 @@ export const Image = styled.div`
 `;
 
 export const DropzoneContainer = styled.div`
-  border: 3px dashed ${darken(0.1, "#fc6963")};
+  border: 3px dashed ${darken(0.1, '#fc6963')};
   min-height: 120px;
   max-height: 150px;
   overflow: auto;
@@ -31,7 +31,7 @@ export const DropzoneContainer = styled.div`
     color: #555;
   }
   &:hover {
-    border-color: ${darken(0.18, "#fc6963")};
+    border-color: ${darken(0.18, '#fc6963')};
   }
   p {
     width: 100%;
@@ -114,12 +114,12 @@ export const Container = styled.div`
           width: 100%;
         }
         &:hover {
-          background: ${() => darken(0.08, "#fc6963")};
+          background: ${() => darken(0.08, '#fc6963')};
         }
         &.cancel {
           background: #222;
           &:hover {
-            background: ${() => darken(0.08, "#222")};
+            background: ${() => darken(0.08, '#222')};
           }
         }
       }

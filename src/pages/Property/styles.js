@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { darken } from "polished";
+import styled from 'styled-components';
+import { darken } from 'polished';
 
 export const Image = styled.div`
   width: 100px;
@@ -79,7 +79,7 @@ export const Container = styled.div`
         display: inline-block;
       }
       &:hover {
-        background: ${() => darken(0.08, "#fc6963")};
+        background: ${() => darken(0.08, '#fc6963')};
       }
     }
   }
@@ -134,7 +134,7 @@ export const PopUp = styled.div`
       display: inline-block;
     }
     &:hover {
-      background: ${() => darken(0.08, "#fc6963")};
+      background: ${() => darken(0.08, '#fc6963')};
     }
   }
 `;

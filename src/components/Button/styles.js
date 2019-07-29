@@ -1,7 +1,7 @@
-import styled from "styled-components";
-import { darken } from "polished";
+import styled from 'styled-components';
+import { darken } from 'polished';
 
-export const Button = styled.button`
+export default styled.button`
   width: 60px;
   height: 60px;
   border-radius: 50%;

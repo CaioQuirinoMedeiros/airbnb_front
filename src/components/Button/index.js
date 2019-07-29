@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { Button } from "./styles";
+import Button from './styles';
 
 const CustomButton = ({ children, color, ...props }) => (
   <Button type="button" color={color} {...props}>
@@ -12,7 +12,7 @@ const CustomButton = ({ children, color, ...props }) => (
 CustomButton.propTypes = {
   children: PropTypes.element.isRequired,
   color: PropTypes.string.isRequired,
-  props: PropTypes.object
+  props: PropTypes.shape().isRequired,
 };
 
-export default CustomButton
+export default CustomButton;

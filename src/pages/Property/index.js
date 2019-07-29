@@ -1,88 +1,86 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.min.css";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 
-import { Container, Images, Image, PopUp } from "./styles";
+import {
+  Container, Images, Image, PopUp,
+} from './styles';
 
-import api from "../../services/api";
-import { getId } from "../../services/auth";
+import api from '../../services/api';
+import { getId } from '../../services/auth';
 
-const intlMonetary = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-  minimumFractionDigits: 2
+const intlMonetary = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+  minimumFractionDigits: 2,
 });
 
 export default class Property extends Component {
   static propTypes = {
     match: PropTypes.shape({
       params: PropTypes.shape({
-        id: PropTypes.string
-      })
-    }).isRequired
+        id: PropTypes.string,
+      }),
+    }).isRequired,
+    history: PropTypes.shape({
+      push: PropTypes.func,
+    }).isRequired,
   };
 
   state = {
     property: null,
     loading: false,
-    confirmationPopUp: false
+    confirmationPopUp: false,
   };
 
   async componentDidMount() {
+    const { match } = this.props;
+
     try {
-      const { id } = this.props.match.params;
+      const { id } = match.params;
       this.setState({ loading: true });
 
       const { data } = await api.get(`/properties/${id}`);
-      this.setState({ property: data, error: "" });
+      this.setState({ property: data });
     } catch (err) {
       console.log(err);
-      this.setState({ property: null, error: "Something went wrong" });
+      this.setState({ property: null });
     } finally {
       this.setState({ loading: false });
     }
   }
-
-  handleNotification = (error, type = "error") =>
-    this.setState({ error: error }, () =>
-      toast(this.state.error, {
-        type,
-        className: "toast",
-        autoClose: 2000,
-        hideProgressBar: true,
-        pauseOnHover: false,
-        pauseOnFocusLoss: false
-      })
-    );
 
   openConfirmationPopUp = () => {
     this.setState({ confirmationPopUp: true });
   };
 
   deleteProperty = async () => {
+    const { history, match } = this.props;
+
     try {
-      const { id } = this.props.match.params;
+      const { id } = match.params;
 
       await api.delete(`/properties/${id}`);
 
-      this.handleNotification("Móvel deletado com sucesso!", "success");
-      this.props.history.push("/app");
+      toast.success('Móvel deletado com sucesso!');
+      history.push('/app');
     } catch (err) {
       console.log(err);
     }
   };
 
   handleCancel = () => {
-    this.props.history.push("/app");
+    const { history } = this.props;
+    history.push('/app');
   };
 
   renderProperty = () => {
     const { property } = this.state;
     const { match } = this.props;
 
-    if (!property) return "Imóvel não encontrado";
+    if (!property) return 'Imóvel não encontrado';
 
     return (
       <>
@@ -93,9 +91,9 @@ export default class Property extends Component {
         <h4>Descrição:</h4>
         <p>{property.description}</p>
         <Images>
-          {property.images.map(image => {
-            return <Image url={image.url} key={image.path} />;
-          })}
+          {property.images.map(image => (
+            <Image url={image.url} key={image.path} />
+          ))}
         </Images>
         <div className="footer">
           <span>{intlMonetary.format(property.price)}</span>
@@ -104,18 +102,20 @@ export default class Property extends Component {
               <Link
                 to={{
                   pathname: `${match.url}/edit`,
-                  state: { id: property.id }
+                  state: { id: property.id },
                 }}
               >
                 Editar
               </Link>
-              <button onClick={this.openConfirmationPopUp}>
+              <button type="button" onClick={this.openConfirmationPopUp}>
                 <i className="fa fa-trash" />
               </button>
             </div>
           )}
         </div>
-        <i className="close fa fa-times" onClick={this.handleCancel} />
+        <button type="button" onClick={this.handleCancel}>
+          <i className="close fa fa-times" />
+        </button>
       </>
     );
   };
@@ -124,10 +124,12 @@ export default class Property extends Component {
     <PopUp>
       <h3>Deseja prosseguir?</h3>
       <div>
-        <button onClick={() => this.setState({ confirmationPopUp: false })}>
+        <button type="button" onClick={() => this.setState({ confirmationPopUp: false })}>
           Não
         </button>
-        <button onClick={this.deleteProperty}>Sim</button>
+        <button type="button" onClick={this.deleteProperty}>
+          Sim
+        </button>
       </div>
     </PopUp>
   );
