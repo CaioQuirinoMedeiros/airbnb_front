@@ -1,44 +1,42 @@
-import React, { Component } from "react";
-import Dimensions from "react-dimensions";
-import MapGl from "react-map-gl";
-import PropTypes from "prop-types";
-import debounce from "lodash/debounce";
-import { withRouter } from "react-router-dom";
-import { ModalRoute } from "react-router-modal";
-import { Range } from "rc-slider";
-import "rc-slider/assets/index.css";
+import React, { Component } from 'react';
+import Dimensions from 'react-dimensions';
+import MapGl from 'react-map-gl';
+import PropTypes from 'prop-types';
+import debounce from 'lodash/debounce';
+import { withRouter } from 'react-router-dom';
+import { ModalRoute } from 'react-router-modal';
+import { toast } from 'react-toastify';
 
-import api from "../../services/api";
-import { logout } from "../../services/auth";
-import Properties from "../../components/Properties";
-import Button from "../../components/Button";
-import AddProperty from "../AddProperty";
-import Property from "../Property";
-import EditProperty from "../EditProperty";
+import api from '../../services/api';
+import { logout } from '../../services/auth';
 
-import { Container, ButtonContainer, PointReference, Filter } from "./styles";
+import Properties from '../../components/Properties';
+import Button from '../../components/Button';
 
-const TOKEN =
-  "pk.eyJ1IjoiY2Fpb3F1aXJpbm8iLCJhIjoiY2p3MGk0MW1wMGJlMTQ0cndpZ2lpdTA2byJ9.vUbijPxSSgpH2WeBZFG7Hg";
+import AddProperty from '../AddProperty';
+import Property from '../Property';
+import EditProperty from '../EditProperty';
 
-const intlMonetary = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-  minimumFractionalDigits: 2
+import {
+  Container, ButtonContainer, PointReference, Filter, Range,
+} from './styles';
+
+const intlMonetary = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+  minimumFractionalDigits: 2,
 });
 
 class Map extends Component {
-  constructor() {
-    super();
-    this.updatePropertiesLocalization = debounce(
-      this.updatePropertiesLocalization,
-      500
-    );
-  }
-
   static propTypes = {
     containerWidth: PropTypes.number.isRequired,
-    containerHeight: PropTypes.number.isRequired
+    containerHeight: PropTypes.number.isRequired,
+    history: PropTypes.shape({
+      push: PropTypes.func,
+    }).isRequired,
+    match: PropTypes.shape({
+      url: PropTypes.string,
+    }).isRequired,
   };
 
   state = {
@@ -47,146 +45,139 @@ class Map extends Component {
       longitude: -47.8116024,
       zoom: 12.8,
       bearing: 0,
-      pitch: 0
+      pitch: 0,
     },
     filter: {
       min_price: null,
-      max_price: null
+      max_price: null,
     },
     properties: [],
-    addActivate: false
+    addPropertyOpen: false,
   };
+
+  updatePropertiesLocalization = debounce(() => this.loadProperties(), 500);
 
   async componentDidMount() {
     await this.loadProperties();
   }
 
-  updatePropertiesLocalization() {
-    this.loadProperties();
-  }
-
   loadProperties = async () => {
-    const { latitude, longitude } = this.state.viewport;
-    const { min_price, max_price } = this.state.filter;
+    console.log('SEARCHIN...');
+    const { viewport, filter } = this.state;
+    const { latitude, longitude } = viewport;
+    const { min_price, max_price } = filter;
 
     try {
-      const { data } = await api.get("/properties", {
-        params: { latitude, longitude, min_price, max_price }
+      const { data } = await api.get('properties', {
+        params: {
+          latitude,
+          longitude,
+          min_price,
+          max_price,
+        },
       });
 
-      data.map(property => {
-        property.latitude = parseFloat(property.latitude);
-        property.longitude = parseFloat(property.longitude);
-        property.price = parseFloat(property.price);
-        return property;
-      });
+      const formatedData = data.map(property => ({
+        ...property,
+        latitude: parseFloat(property.latitude),
+        longitude: parseFloat(property.longitude),
+        price: parseFloat(property.price),
+      }));
 
-      this.setState({ properties: data });
+      this.setState({ properties: formatedData });
     } catch (err) {
       console.log(err);
+      toast.error('Error trying to load properties');
     }
   };
 
-  handlerLogout = e => {
+  handleLogout = () => {
+    const { history } = this.props;
+
     logout();
-    this.props.history.push("/");
+    history.push('/');
   };
 
   renderActions = () => {
+    const { filter } = this.state;
     return (
       <ButtonContainer>
-        <Button
-          color="#fc6963"
-          onClick={() => this.setState({ addActivate: true })}
-        >
+        <Button color="#fc6963" onClick={() => this.setState({ addPropertyOpen: true })}>
           <i className="fa fa-plus" />
         </Button>
+
         <Filter>
-          <span>{intlMonetary.format(this.state.filter.max_price)}</span>
+          <span>{filter.max_price && intlMonetary.format(filter.max_price)}</span>
           <Range
-            max={1000}
-            vertical={true}
-            defaultValue={[0, 1000]}
-            railStyle={{
-              backgroundColor: "#222",
-              borderRadius: 10
-            }}
-            trackStyle={[{ background: "#fc6963" }]}
-            handleStyle={[
-              { border: "none", background: "#fc6963" },
-              { border: "none", background: "#fc6963" }
-            ]}
+            max={10000}
+            step={100}
+            value={[filter.min_price, filter.max_price]}
             onChange={([min_price, max_price]) => {
               this.setState({ filter: { min_price, max_price } });
             }}
-            onAfterChange={() => this.updatePropertiesLocalization()}
+            onAfterChange={this.updatePropertiesLocalization}
           />
-          <span>{intlMonetary.format(this.state.filter.min_price)}</span>
+          <span>{intlMonetary.format(filter.min_price)}</span>
         </Filter>
-        <Button color="#222" onClick={this.handlerLogout}>
+        <Button color="#222" onClick={this.handleLogout}>
           <i className="fa fa-times" />
         </Button>
       </ButtonContainer>
     );
   };
 
-  renderPointReference() {
-    return (
-      this.state.addActivate && (
-        <PointReference>
-          <p>Arraste o mapa para escolher a localização</p>
-          <i className="fa fa-map-marker" />
-          <div>
-            <button onClick={this.handleAddProperty} type="button">
-              Adicionar
-            </button>
-            <button
-              onClick={() => this.setState({ addActivate: false })}
-              className="cancel"
-            >
-              Cancelar
-            </button>
-          </div>
-        </PointReference>
-      )
-    );
-  }
-
   handleAddProperty = () => {
     const { match, history } = this.props;
-    const { latitude, longitude } = this.state.viewport;
-    history.push(
-      `${match.url}/properties/add?latitude=${latitude}&longitude=${longitude}`
-    );
+    const { viewport } = this.state;
+    const { latitude, longitude } = viewport;
 
-    this.setState({ addActivate: false });
+    this.setState({ addPropertyOpen: false });
+
+    history.push(`${match.url}/properties/add?latitude=${latitude}&longitude=${longitude}`);
   };
 
+  renderPointReference = () => (
+    <PointReference>
+      <p>Arraste o mapa para escolher a localização</p>
+      <i className="fa fa-map-marker" />
+      <div>
+        <button onClick={this.handleAddProperty} type="button">
+          Adicionar
+        </button>
+        <button
+          type="button"
+          onClick={() => this.setState({ addPropertyOpen: false })}
+          className="cancel"
+        >
+          Cancelar
+        </button>
+      </div>
+    </PointReference>
+  );
+
   render() {
-    const {
-      containerWidth: width,
-      containerHeight: height,
-      match
-    } = this.props;
-    const { properties, addActivate } = this.state;
+    const { containerWidth: width, containerHeight: height, match } = this.props;
+    const { properties, addPropertyOpen, viewport } = this.state;
+    console.log('rendered');
     return (
       <Container>
         <MapGl
           width={width}
           height={height}
-          {...this.state.viewport}
+          {...viewport}
           mapStyle="mapbox://styles/mapbox/dark-v9"
-          mapboxApiAccessToken={TOKEN}
-          onViewportChange={viewport => {
-            this.setState({ viewport });
+          mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+          onViewportChange={(newViewport) => {
+            this.setState({ viewport: newViewport });
           }}
-          onViewStateChange={this.updatePropertiesLocalization.bind(this)}
+          onViewStateChange={this.updatePropertiesLocalization}
         >
-          {!addActivate && <Properties properties={properties} match={match} />}
+          {!addPropertyOpen && <Properties properties={properties} match={match} />}
         </MapGl>
 
         {this.renderActions()}
-        {this.renderPointReference()}
+        {addPropertyOpen && this.renderPointReference()}
+
         <ModalRoute
           path={`${match.url}/properties/add`}
           parentPath={match.url}

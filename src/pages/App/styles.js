@@ -1,5 +1,6 @@
-import styled from "styled-components";
-import { darken } from "polished";
+import styled from 'styled-components';
+import { darken } from 'polished';
+import { Range as rcSliderRange } from 'rc-slider';
 
 export const Container = styled.div`
   display: flex;
@@ -25,6 +26,19 @@ export const ButtonContainer = styled.div`
   }
 `;
 
+export const Range = styled(rcSliderRange).attrs({
+  railStyle: {
+    backgroundColor: '#222',
+    borderRadius: 10,
+  },
+  trackStyle: [{ background: '#fc6963' }],
+  handleStyle: [
+    { border: 'none', background: '#fc6963' },
+    { border: 'none', background: '#fc6963' },
+  ],
+  vertical: true,
+})``;
+
 export const PointReference = styled.div`
   position: absolute;
   top: 0;
@@ -45,7 +59,7 @@ export const PointReference = styled.div`
     margin: 100px 0;
     -webkit-text-fill-color: #fc6963;
     -webkit-text-stroke-width: 2px;
-    -webkit-text-stroke-color: ${() => darken(0.05, "#fc6963")};
+    -webkit-text-stroke-color: ${() => darken(0.05, '#fc6963')};
   }
   div {
     button {
@@ -62,14 +76,14 @@ export const PointReference = styled.div`
       cursor: pointer;
       transition: all 0.3s;
       &:hover {
-        background: ${() => darken(0.06, "#fc6963")};
+        background: ${() => darken(0.06, '#fc6963')};
       }
       &.cancel {
         background: #f1f1f1;
         color: #222;
 
         &:hover {
-          background: ${() => darken(-0.06, "#f1f1f1")};
+          background: ${() => darken(-0.06, '#f1f1f1')};
         }
       }
     }
