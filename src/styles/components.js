@@ -56,6 +56,10 @@ export const Input = styled(UnformInput)`
   }
 `;
 
+export const Title = styled.h1`
+  font-size: 2.4rem;
+`;
+
 export const Line = styled.hr`
   margin: 20px 0;
   border: none;

@@ -5,7 +5,8 @@ import { Form as Unform } from '@rocketseat/unform';
 
 import ButtonComponent from '../../components/Button';
 import InputComponent from '../../components/Input';
-import { Line as StyledLine } from '../../styles/components';
+import { Line as StyledLine, Title as StyledTitle } from '../../styles/components';
+
 
 export const Image = styled.div`
   width: 8rem;
@@ -61,9 +62,7 @@ export const Form = styled(Unform)`
   overflow: hidden;
 `;
 
-export const Title = styled.h1`
-  font-size: 2.4rem;
-`;
+export const Title = styled(StyledTitle)``;
 
 export const Line = styled(StyledLine)``;
 
