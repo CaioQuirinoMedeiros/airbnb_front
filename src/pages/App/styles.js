@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import { darken } from 'polished';
 import { Range as rcSliderRange } from 'rc-slider';
 
+import ButtonComponent from '../../components/Button';
+
 export const Container = styled.div`
   display: flex;
   align-items: center;
@@ -12,17 +14,17 @@ export const Container = styled.div`
 
 export const ButtonContainer = styled.div`
   position: absolute;
-  width: 80px;
+  width: 8rem;
   height: 100vh;
   top: 0;
-  right: 15px;
+  right: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
 
   > * {
-    margin: 15px 0;
+    margin: 1.5rem 0;
   }
 `;
 
@@ -49,45 +51,34 @@ export const PointReference = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  background: rgba(0, 0, 0, 0.1);
   p {
     color: #fff;
+    font-size: 1.8rem;
   }
   i {
     color: #fc6963;
     pointer-events: all;
-    font-size: 50px;
-    margin: 100px 0;
+    font-size: 5rem;
+    margin: 10rem 0;
     -webkit-text-fill-color: #fc6963;
     -webkit-text-stroke-width: 2px;
     -webkit-text-stroke-color: ${() => darken(0.05, '#fc6963')};
   }
-  div {
-    button {
-      border: none;
-      font-size: 15px;
-      height: 46px;
-      margin: 0 10px;
-      background-color: #fc6963;
-      color: #ffffff;
-      padding: 0 20px;
-      border-radius: 3px;
-      pointer-events: all;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      &:hover {
-        background: ${() => darken(0.06, '#fc6963')};
-      }
-      &.cancel {
-        background: #f1f1f1;
-        color: #222;
+`;
 
-        &:hover {
-          background: ${() => darken(-0.06, '#f1f1f1')};
-        }
-      }
-    }
-  }
+export const ButtonsWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 99;
+`;
+
+export const Button = styled(ButtonComponent)`
+  width: 30rem;
+  margin-top: 0.5rem;
+  pointer-events: all;
 `;
 
 export const Filter = styled.div`

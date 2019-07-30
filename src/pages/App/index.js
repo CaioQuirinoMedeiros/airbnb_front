@@ -11,14 +11,20 @@ import api from '../../services/api';
 import { logout } from '../../services/auth';
 
 import Properties from '../../components/Properties';
-import Button from '../../components/Button';
+import BigButton from '../../components/BigButton';
 
 import AddProperty from '../AddProperty';
 import Property from '../Property';
 import EditProperty from '../EditProperty';
 
 import {
-  Container, ButtonContainer, PointReference, Filter, Range,
+  Container,
+  ButtonContainer,
+  PointReference,
+  ButtonsWrapper,
+  Button,
+  Filter,
+  Range,
 } from './styles';
 
 const intlMonetary = new Intl.NumberFormat('pt-BR', {
@@ -62,7 +68,6 @@ class Map extends Component {
   }
 
   loadProperties = async () => {
-    console.log('SEARCHIN...');
     const { viewport, filter } = this.state;
     const { latitude, longitude } = viewport;
     const { min_price, max_price } = filter;
@@ -102,9 +107,9 @@ class Map extends Component {
     const { filter } = this.state;
     return (
       <ButtonContainer>
-        <Button color="#fc6963" onClick={() => this.setState({ addPropertyOpen: true })}>
+        <BigButton color="#fc6963" onClick={() => this.setState({ addPropertyOpen: true })}>
           <i className="fa fa-plus" />
-        </Button>
+        </BigButton>
 
         <Filter>
           <span>{filter.max_price && intlMonetary.format(filter.max_price)}</span>
@@ -113,15 +118,16 @@ class Map extends Component {
             step={100}
             value={[filter.min_price, filter.max_price]}
             onChange={([min_price, max_price]) => {
+              max_price = max_price === 0 ? null : max_price;
               this.setState({ filter: { min_price, max_price } });
             }}
             onAfterChange={this.updatePropertiesLocalization}
           />
           <span>{intlMonetary.format(filter.min_price)}</span>
         </Filter>
-        <Button color="#222" onClick={this.handleLogout}>
+        <BigButton color="#222" onClick={this.handleLogout}>
           <i className="fa fa-times" />
-        </Button>
+        </BigButton>
       </ButtonContainer>
     );
   };
@@ -138,27 +144,20 @@ class Map extends Component {
 
   renderPointReference = () => (
     <PointReference>
-      <p>Arraste o mapa para escolher a localização</p>
+      <p>Drag to choose the location</p>
       <i className="fa fa-map-marker" />
-      <div>
-        <button onClick={this.handleAddProperty} type="button">
-          Adicionar
-        </button>
-        <button
-          type="button"
-          onClick={() => this.setState({ addPropertyOpen: false })}
-          className="cancel"
-        >
-          Cancelar
-        </button>
-      </div>
+      <ButtonsWrapper>
+        <Button color="red" onClick={this.handleAddProperty}>
+          Right here
+        </Button>
+        <Button onClick={() => this.setState({ addPropertyOpen: false })}>Cancel</Button>
+      </ButtonsWrapper>
     </PointReference>
   );
 
   render() {
     const { containerWidth: width, containerHeight: height, match } = this.props;
     const { properties, addPropertyOpen, viewport } = this.state;
-    console.log('rendered');
     return (
       <Container>
         <MapGl
