@@ -1,22 +1,27 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes from 'styled-components';
 
-import Button from './styles';
+import ReactLoading from 'react-loading';
+import { Button as StyledButton } from '../../styles/components';
 
-const CustomButton = ({ children, color, ...props }) => (
-  <Button type="button" color={color} {...props}>
-    {children}
-  </Button>
+const Button = ({
+  loading, children, color, ...rest
+}) => (
+  <StyledButton color={color || 'white'} {...rest}>
+    {loading ? <ReactLoading width={40} type="bubbles" /> : children}
+  </StyledButton>
 );
 
-CustomButton.propTypes = {
-  children: PropTypes.element.isRequired,
-  color: PropTypes.string.isRequired,
-  props: PropTypes.shape(),
+Button.propTypes = {
+  loading: PropTypes.bool,
+  children: PropTypes.string,
+  color: PropTypes.string,
 };
 
-CustomButton.defaultProps = {
-  props: {},
+Button.defaultProps = {
+  loading: false,
+  children: 'Button',
+  color: 'white',
 };
 
-export default CustomButton;
+export default Button;
