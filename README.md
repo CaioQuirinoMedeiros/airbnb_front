@@ -1,10 +1,18 @@
-## Description
+# Airbnb
 
-Front-end da aplicação clone do Airbnb. A aplicação foi desenvolvida em ReactJS e consome uma API rest construída com AdonisJS.
+https://caioquirinomedeiros.github.io/airbnb_web
 
-Nessa aplicação é possível se registrar e navegar pelo mapa para encontrar anúncios de outros usuários, bem como criar seu próprio anúncio de imóvel, podendo inclusive adicionar imagens
+Web application inspired on Airbnb. Built with ReactJS and NodeJS (AdonisJS) on the backend.
 
-teste aqui: [https://airbnbfront.herokuapp.com/](https://airbnbfront.herokuapp.com/)
+Sign up and publish your property, with images of course!
+
+[The rest API](https://github.com/CaioQuirinoMedeiros/airbnb_api)
+
+This is a ReactJS project, bootstrapped with [Create React App](https://github.com/facebook/create-react-app)
+
+## Setup 
+
+Just follow the .env.example
 
 ## Available Scripts
 
