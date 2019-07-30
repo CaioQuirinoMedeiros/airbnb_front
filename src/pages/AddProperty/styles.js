@@ -7,7 +7,6 @@ import ButtonComponent from '../../components/Button';
 import InputComponent from '../../components/Input';
 import { Line as StyledLine, Title as StyledTitle } from '../../styles/components';
 
-
 export const Image = styled.div`
   width: 8rem;
   height: 8rem;
@@ -76,7 +75,7 @@ export const PriceInput = styled(CurrencyInput)`
 
   border: 1px solid #ddd;
   border-radius: 5px;
-  color: #777;
+  color: #444;
   font-size: 1.5rem;
 
   &:hover {
@@ -89,7 +88,7 @@ export const PriceInput = styled(CurrencyInput)`
     border-color: ${darken(0.15, '#ddd')};
   }
   &::placeholder {
-    color: #999;
+    color: #a5a5a5;
   }
 `;
 

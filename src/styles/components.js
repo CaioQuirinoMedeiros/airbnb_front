@@ -39,7 +39,7 @@ export const Input = styled(UnformInput)`
 
   border: 1px solid #ddd;
   border-radius: 5px;
-  color: #777;
+  color: #444;
   font-size: 1.5rem;
 
   &:hover {
@@ -52,7 +52,7 @@ export const Input = styled(UnformInput)`
     border-color: ${darken(0.15, '#ddd')};
   }
   &::placeholder {
-    color: #999;
+    color: #a5a5a5;
   }
 `;
 
