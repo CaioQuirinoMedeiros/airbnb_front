@@ -2,11 +2,14 @@
   "name": "airbnb_web",
   "version": "0.1.0",
   "private": true,
+  "author": "Caio Quirino",
+  "homepage": "https://caioquirinomedeiros.github.io/airbnb_web",
   "dependencies": {
     "@rocketseat/unform": "^1.4.0",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "font-awesome": "^4.7.0",
+    "gh-pages": "^2.0.1",
     "lodash": "^4.17.15",
     "polished": "^3.3.2",
     "prop-types": "^15.7.2",
@@ -30,7 +33,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
