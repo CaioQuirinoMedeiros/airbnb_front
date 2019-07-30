@@ -94,7 +94,7 @@ class AddProperty extends Component {
       });
 
       if (!files.length) {
-        toast.success('Móvel criado com sucesso!');
+        toast.success('Property added successfully!');
 
         history.push('/app');
       } else {
@@ -110,22 +110,20 @@ class AddProperty extends Component {
 
         await api.post(`/properties/${data.id}/images`, filesFormData, config);
 
-        toast.success('Imóvel criado com sucesso!');
+        toast.success('Property added successfully!');
 
         history.push('/app');
       }
     } catch (err) {
       console.log(err);
-      toast.error('Erro ao criar imóvel');
+      toast.error('Something went wrong');
     } finally {
       this.setState({ loading: false });
     }
   };
 
-  handleCancel = (e) => {
+  handleCancel = () => {
     const { history } = this.props;
-    e.preventDefault();
-
     history.push('/app');
   };
 

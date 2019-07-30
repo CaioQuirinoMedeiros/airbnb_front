@@ -84,7 +84,7 @@ export default class Property extends Component {
       history.push('/app');
     } catch (err) {
       console.log(err);
-      toast.error("Could'nt delete property");
+      toast.error("Couldn't delete property");
     }
   };
 

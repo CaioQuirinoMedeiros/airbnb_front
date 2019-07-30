@@ -125,7 +125,7 @@ class EditProperty extends Component {
 
         await api.post(`/properties/${id}/images`, filesFormData, config);
 
-        toast.success('Property edited!');
+        toast.success('Property edited successfully!');
 
         history.push(`/app/property/${id}`);
       }
