@@ -3,16 +3,28 @@ import { withRouter } from 'react-router-dom';
 import querySearch from 'stringquery';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
-import { Form, Input } from '@rocketseat/unform';
-import CurrencyInput from 'react-currency-input';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
-import ReactLoading from 'react-loading';
 
 import api from '../../services/api';
 
-import { Container, DropzoneContainer, Image } from './styles';
+import {
+  Form,
+  Title,
+  DropzoneContainer,
+  Image,
+  Line,
+  Input,
+  PriceInput,
+  ButtonsWrapper,
+  Button,
+} from './styles';
+
+const schema = Yup.object().shape({
+  title: Yup.string().required('A title is required'),
+  address: Yup.string().required('An address is required'),
+  description: Yup.string().required('A decription is required'),
+});
 
 class AddProperty extends Component {
   static propTypes = {
@@ -43,28 +55,24 @@ class AddProperty extends Component {
     this.setState({ ...params });
   }
 
-  schema = () => Yup.object().shape({
-    title: Yup.string().required(() => toast.error('Preencha o título')),
-    address: Yup.string().required(() => toast.error('Preencha o endereço')),
-    description: Yup.string().required(() => toast.error('Preencha a descrição')),
-  });
-
   handleDrop = (dropedFiles) => {
-    dropedFiles.map(file => ({ ...file, preview: URL.createObjectURL(file) }));
-    this.setState(({ files }) => ({ files: [...files, ...dropedFiles] }));
+    dropedFiles.forEach((dropedFile) => {
+      dropedFile.url = URL.createObjectURL(dropedFile);
+    });
+    this.setState({ files: dropedFiles });
   };
 
   renderFiles = () => {
     const { files } = this.state;
 
     return (
-      <DropzoneContainer>
+      <>
         {!files.length ? (
-          <p>Arraste aqui ou clique para selecionar imagens</p>
+          <p>Drop your images here or click to select manually</p>
         ) : (
-          files.map(file => <Image url={file.preview} key={file.path} />)
+          files.map(file => <Image url={file.url} key={file.path} />)
         )}
-      </DropzoneContainer>
+      </>
     );
   };
 
@@ -73,13 +81,12 @@ class AddProperty extends Component {
 
     try {
       this.setState({ loading: true });
+
       const {
         price, latitude, longitude, files,
       } = this.state;
 
-      const {
-        data: { id },
-      } = await api.post('/properties', {
+      const { data } = await api.post('/properties', {
         ...formData,
         price,
         latitude,
@@ -88,23 +95,27 @@ class AddProperty extends Component {
 
       if (!files.length) {
         toast.success('Móvel criado com sucesso!');
+
+        history.push('/app');
+      } else {
+        const filesFormData = new FormData();
+
+        files.map((file, index) => filesFormData.append(`image[${index}]`, file, file.name));
+
+        const config = {
+          headers: {
+            'content-type': 'multipart/form-data',
+          },
+        };
+
+        await api.post(`/properties/${data.id}/images`, filesFormData, config);
+
+        toast.success('Imóvel criado com sucesso!');
+
         history.push('/app');
       }
-
-      const data = new FormData();
-      files.map((file, index) => data.append(`image[${index}]`, file, file.name));
-
-      const config = {
-        headers: {
-          'content-type': 'multipart/form-data',
-        },
-      };
-
-      await api.post(`/properties/${id}/images`, data, config);
-
-      toast.success('Imóvel criado com sucesso!');
-      history.push('/app');
     } catch (err) {
+      console.log(err);
       toast.error('Erro ao criar imóvel');
     } finally {
       this.setState({ loading: false });
@@ -125,43 +136,40 @@ class AddProperty extends Component {
   render() {
     const { loading, price } = this.state;
     return (
-      <Container>
-        <Form schema={this.schema()} onSubmit={this.handleSubmit}>
-          <h1>Adicionar imóvel</h1>
-          <hr />
-          <Input placeholder="Título" name="title" />
-          <Input placeholder="Endereço" name="address" />
-          <Input multiline rows="5" placeholder="Descrição" name="description" />
-          <CurrencyInput
-            decimalSeparator=","
-            thousandSeparator="."
-            prefix="R$ "
-            value={price}
-            onChangeEvent={this.handlePriceChange}
-          />
-          <Dropzone
-            multiple
-            onDrop={files => this.handleDrop(files)}
-            accept="image/*"
-            className="dropzone"
-          >
-            {({ getRootProps, getInputProps }) => (
-              <div className="dropzone" {...getRootProps()}>
-                <input {...getInputProps()} />
-                {this.renderFiles()}
-              </div>
-            )}
-          </Dropzone>
-          <div className="actions">
-            <button type="submit">
-              {loading ? <ReactLoading type="bubbles" width={56} /> : 'Adicionar'}
-            </button>
-            <button type="button" onClick={this.handleCancel} className="cancel">
-              Cancelar
-            </button>
-          </div>
-        </Form>
-      </Container>
+      <Form schema={schema} onSubmit={this.handleSubmit}>
+        <Title>Add property</Title>
+        <Line />
+
+        <Input name="title" placeholder="Title" />
+
+        <Input name="address" placeholder="Address" />
+
+        <Input multiline rows="3" name="description" placeholder="Description" />
+
+        <PriceInput
+          decimalSeparator=","
+          thousandSeparator="."
+          prefix="R$ "
+          value={price}
+          onChangeEvent={this.handlePriceChange}
+        />
+
+        <Dropzone multiple onDrop={files => this.handleDrop(files)} accept="image/*">
+          {({ getRootProps, getInputProps }) => (
+            <DropzoneContainer {...getRootProps()}>
+              <input {...getInputProps()} />
+              {this.renderFiles()}
+            </DropzoneContainer>
+          )}
+        </Dropzone>
+
+        <ButtonsWrapper>
+          <Button color="red" loading={loading} type="submit">
+            Confirm
+          </Button>
+          <Button onClick={this.handleCancel}>Cancel</Button>
+        </ButtonsWrapper>
+      </Form>
     );
   }
 }
