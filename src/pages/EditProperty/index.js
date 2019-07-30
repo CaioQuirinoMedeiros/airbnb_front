@@ -2,14 +2,21 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
-import CurrencyInput from 'react-currency-input';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
-import ReactLoading from 'react-loading';
 
 import api from '../../services/api';
 
-import { Container, DropzoneContainer, Image } from './styles';
+import {
+  Form,
+  Title,
+  DropzoneContainer,
+  Image,
+  Line,
+  Input,
+  PriceInput,
+  ButtonsWrapper,
+  Button,
+} from '../AddProperty/styles';
 
 class EditProperty extends Component {
   static propTypes = {
@@ -18,77 +25,81 @@ class EditProperty extends Component {
         id: PropTypes.number,
       }),
     }).isRequired,
+    history: PropTypes.shape({
+      push: PropTypes.func,
+      goBack: PropTypes.func,
+    }).isRequired,
   };
 
   state = {
     property: {
+      id: null,
       title: '',
       address: '',
       description: '',
-      price: 0,
+      price: null,
       images: [],
     },
-    error: '',
     loading: false,
     files: [],
   };
 
   async componentDidMount() {
     const { location } = this.props;
+
     try {
-      const { id } = location.state;
       this.setState({ loading: true });
 
+      const { id } = location.state;
+
       const { data } = await api.get(`/properties/${id}`);
+
       this.setState({
-        property: { ...data, price: parseFloat(data.price) },
-        error: '',
+        property: { id, ...data, price: parseFloat(data.price) },
       });
     } catch (err) {
       console.log(err);
-      this.setState({ property: null, error: 'Algo saiu errado...' });
+      toast.error('Error trying to get the property');
+      this.setState({ property: null });
     } finally {
       this.setState({ loading: false });
     }
   }
 
-  handleDrop = (files) => {
-    files.map(file => (file.preview = URL.createObjectURL(file)));
-    this.setState({ files: [...this.state.files, ...files] });
+  handleDrop = (dropedFiles) => {
+    dropedFiles.forEach((dropedFile) => {
+      dropedFile.url = URL.createObjectURL(dropedFile);
+    });
+    this.setState({ files: dropedFiles });
   };
 
   renderFiles = () => {
-    const { files } = this.state;
+    const { files, property } = this.state;
+    const { images } = property;
 
     return (
-      <DropzoneContainer>
-        {!files.length ? (
-          <p>Arraste aqui ou clique para selecionar imagens</p>
+      <>
+        {!files.length && !images.length ? (
+          <p>Drop your images here or click to select manually</p>
         ) : (
-          files.map(file => <Image url={file.preview} key={file.path} />)
+          [
+            ...files.map(file => <Image url={file.url} key={file.path} />),
+            ...images.map(image => <Image url={image.url} key={image.path} />),
+          ]
         )}
-      </DropzoneContainer>
+      </>
     );
   };
 
-  handleNotification = (error, type = 'error') => this.setState({ error }, () => toast(this.state.error, {
-    type,
-    className: 'toast',
-    autoClose: 2000,
-    hideProgressBar: true,
-    pauseOnHover: false,
-    pauseOnFocusLoss: false,
-  }));
-
-  handleSubmit = async (e) => {
-    e.preventDefault();
+  handleSubmit = async (formData) => {
+    const { history } = this.props;
 
     try {
       this.setState({ loading: true });
-      const { files } = this.state;
-      const {
-        id, title, address, description, price,
-      } = this.state.property;
+
+      const { title, address, description } = formData;
+      const { files, property } = this.state;
+      const { id, price } = property;
 
       await api.put(`/properties/${id}`, {
         title,
@@ -98,107 +109,97 @@ class EditProperty extends Component {
       });
 
       if (!files.length) {
-        this.handleNotification('Imóvel editado com sucesso!', 'success');
-        this.props.history.push(`/app/property/${id}`);
+        toast.success('Property edited successfully!');
+
+        history.push(`/app/property/${id}`);
+      } else {
+        const filesFormData = new FormData();
+
+        files.map((file, index) => filesFormData.append(`image[${index}]`, file, file.name));
+
+        const config = {
+          headers: {
+            'content-type': 'multipart/form-data',
+          },
+        };
+
+        await api.post(`/properties/${id}/images`, filesFormData, config);
+
+        toast.success('Property edited!');
+
+        history.push(`/app/property/${id}`);
       }
-
-      const data = new FormData();
-      files.map((file, index) => data.append(`image[${index}]`, file, file.name));
-
-      const config = {
-        headers: {
-          'content-type': 'multipart/form-data',
-        },
-      };
-
-      await api.post(`/properties/${id}/images`, data, config);
-
-      this.handleNotification('Imóvel criado com sucesso!', 'success');
-      this.props.history.push(`/app/property/${id}`);
     } catch (err) {
-      this.handleNotification('Erro ao editar imóvel');
+      console.log(err);
+      toast.error('Something went wrong');
     } finally {
       this.setState({ loading: false });
     }
   };
 
-  handleCancel = (e) => {
-    e.preventDefault();
+  handleCancel = () => {
+    const { history } = this.props;
+    history.goBack();
+  };
 
-    this.props.history.goBack();
+  handlePriceChange = (e, maskedvalue, floatvalue) => {
+    this.setState(({ property }) => ({ property: { ...property, price: floatvalue } }));
+  };
+
+  handleDescriptionChange = (e) => {
+    e.persist();
+    this.setState(({ property }) => ({ property: { ...property, description: e.target.value } }));
   };
 
   render() {
-    const { loading } = this.state;
+    const { loading, property } = this.state;
     const {
       title, price, description, address,
-    } = this.state.property;
+    } = property;
 
     return (
-      <Container>
-        <form onSubmit={this.handleSubmit}>
-          <h1>Editar imóvel</h1>
-          <hr />
-          <input
-            placeholder="Título"
-            name="title"
-            value={title}
-            onChange={e => this.setState({
-              property: { ...this.state.property, title: e.target.value },
-            })
-            }
-          />
-          <input
-            placeholder="Endereço"
-            name="address"
-            value={address}
-            onChange={e => this.setState({
-              property: { ...this.state.property, address: e.target.value },
-            })
-            }
-          />
-          <textarea
-            rows="5"
-            placeholder="Descrição"
-            name="description"
-            onChange={e => this.setState({
-              property: {
-                ...this.state.property,
-                description: e.target.value,
-              },
-            })
-            }
-            value={description}
-          />
-          <CurrencyInput
-            decimalSeparator=","
-            thousandSeparator="."
-            prefix="R$ "
-            value={price}
-            onChangeEvent={(event, maskedvalue, floatvalue) => this.setState({
-              property: { ...this.state.property, price: floatvalue },
-            })
-            }
-          />
-          <Dropzone multiple onDrop={this.handleDrop} accept="image/*" className="dropzone">
-            {({ getRootProps, getInputProps }) => (
-              <div className="dropzone" {...getRootProps()}>
-                <input {...getInputProps()} />
-                {this.renderFiles()}
-              </div>
-            )}
-          </Dropzone>
-          <div className="actions">
-            <button type="submit">
-              {loading ? <ReactLoading type="bubbles" width={56} /> : 'Salvar'}
-            </button>
-            <button onClick={this.handleCancel} className="cancel">
-              Cancelar
-            </button>
-          </div>
-        </form>
-        <i className="close fa fa-times" onClick={this.handleCancel} />
-      </Container>
+      <Form onSubmit={this.handleSubmit} initialData={{ title, address, description }}>
+        <Title>Edit Property</Title>
+
+        <Line />
+
+        <Input name="title" placeholder="Title" />
+
+        <Input name="address" placeholder="Address" />
+
+        <Input
+          multiline
+          rows="3"
+          name="description"
+          value={description}
+          placeholder="Description"
+          onChange={this.handleDescriptionChange}
+        />
+
+        <PriceInput
+          decimalSeparator=","
+          thousandSeparator="."
+          prefix="R$ "
+          value={price}
+          onChangeEvent={this.handlePriceChange}
+        />
+
+        <Dropzone multiple onDrop={this.handleDrop} accept="image/*" className="dropzone">
+          {({ getRootProps, getInputProps }) => (
+            <DropzoneContainer {...getRootProps()}>
+              <input {...getInputProps()} />
+              {this.renderFiles()}
+            </DropzoneContainer>
+          )}
+        </Dropzone>
+
+        <ButtonsWrapper>
+          <Button color="red" loading={loading} type="submit">
+            Confirm
+          </Button>
+          <Button onClick={this.handleCancel}>Cancel</Button>
+        </ButtonsWrapper>
+      </Form>
     );
   }
 }
