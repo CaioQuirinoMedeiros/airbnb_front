@@ -1,4 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
+import { darken } from 'polished';
+
 import 'react-toastify/dist/ReactToastify.min.css';
 import 'rc-slider/assets/index.css';
 
@@ -8,6 +10,24 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     margin: 0;
     outline: 0;
+
+    &::-webkit-scrollbar {
+      width: 0.8rem;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #eee;
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #fc6963;
+      outline: none;
+
+      &:hover {
+        background: ${darken(0.08, '#fc6963')};
+      }
+    }
   }
 
   body, html {
