@@ -1,7 +1,11 @@
 import styled from 'styled-components';
 import { darken } from 'polished';
-import { Form as Unform, Input as UnformInput } from '@rocketseat/unform';
+import { Form as Unform } from '@rocketseat/unform';
 import { Link as RouterLink } from 'react-router-dom';
+
+import ButtonComponent from '../../components/Button';
+import InputComponent from '../../components/Input';
+import { Line as StyledLine } from '../../styles/components';
 
 export const Container = styled.div`
   display: flex;
@@ -39,36 +43,7 @@ export const Form = styled(Unform)`
   }
 `;
 
-export const InputWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1.5rem;
-  position: relative;
-
-  & > span {
-    position: absolute;
-    left: 0.5%;
-    top: 105%;
-    color: red;
-    font-size: 1.1rem;
-  }
-`;
-
-export const Input = styled(UnformInput)`
-  width: 100%;
-  padding: 1rem;
-  margin-bottom: 0.2rem;
-
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  color: #777;
-  font-size: 1.5rem;
-
-  &::placeholder {
-    color: #999;
-  }
-`;
+export const Input = styled(InputComponent)``;
 
 export const ButtonsWrapper = styled.div`
   width: 100%;
@@ -76,25 +51,9 @@ export const ButtonsWrapper = styled.div`
   flex-direction: column;
 `;
 
-export const Button = styled.button`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+export const Button = styled(ButtonComponent)``;
 
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.5rem;
-  background: #fc6963;
-  height: 40px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s;
-
-  &:hover {
-    background: ${darken(0.08, '#fc6963')};
-  }
-`;
+export const Line = styled(StyledLine)``;
 
 export const Link = styled(RouterLink)`
   font-size: 1.5rem;

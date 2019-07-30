@@ -10,7 +10,7 @@ import api from '../../../services/api';
 import Logo from '../../../assets/images/logo.svg';
 
 import {
-  Container, Form, InputWrapper, Input, ButtonsWrapper, Button, Link,
+  Container, Form, Input, ButtonsWrapper, Button, Line, Link,
 } from '../styles';
 
 const schema = Yup.object().shape({
@@ -60,24 +60,17 @@ class SignUp extends Component {
         <Form schema={schema} onSubmit={this.handleSignUp}>
           <img src={Logo} alt="Logo" />
 
-          <InputWrapper>
-            <Input name="username" placeholder="Name" />
-          </InputWrapper>
+          <Input name="username" placeholder="Name" />
 
-          <InputWrapper>
-            <Input type="email" name="email" placeholder="Email" />
-          </InputWrapper>
+          <Input type="email" name="email" placeholder="Email" />
 
-          <InputWrapper>
-            <Input type="password" name="password" placeholder="Password" />
-          </InputWrapper>
+          <Input type="password" name="password" placeholder="Password" />
 
           <ButtonsWrapper>
-            <Button type="submit">
+            <Button color="red" type="submit">
               {loading ? <ReactLoading type="bubbles" width={40} /> : 'Sign Up'}
             </Button>
-
-            <hr />
+            <Line />
             <Link to="/">I already have an account</Link>
           </ButtonsWrapper>
         </Form>

@@ -12,7 +12,7 @@ import { login } from '../../../services/auth';
 import Logo from '../../../assets/images/logo.svg';
 
 import {
-  Container, Form, InputWrapper, Input, Link, ButtonsWrapper, Button,
+  Container, Form, Input, Link, ButtonsWrapper, Line, Button,
 } from '../styles';
 
 const schema = Yup.object().shape({
@@ -60,20 +60,15 @@ class SingIn extends Component {
         <Form schema={schema} onSubmit={this.handleSingIn}>
           <img src={Logo} alt="Logo" />
 
-          <InputWrapper>
-            <Input type="email" name="email" placeholder="Email" />
-          </InputWrapper>
+          <Input type="email" name="email" placeholder="Email" />
 
-          <InputWrapper>
-            <Input type="password" name="password" placeholder="Password" />
-          </InputWrapper>
+          <Input type="password" name="password" placeholder="Password" />
 
           <ButtonsWrapper>
-            <Button type="submit">
+            <Button type="submit" color="red">
               {loading ? <ReactLoading type="bubbles" width={40} /> : 'Login'}
             </Button>
-
-            <hr />
+            <Line />
             <Link to="/signup">Sign up for free</Link>
           </ButtonsWrapper>
         </Form>
