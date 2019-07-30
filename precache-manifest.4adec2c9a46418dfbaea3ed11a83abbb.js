@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "ac7ff9eeb76d5a138591ff7e9585616d",
+    "revision": "3bba5254228294ee152162b7e53982c1",
     "url": "/airbnb_web/index.html"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/airbnb_web/static/js/2.8ee33e01.chunk.js"
   },
   {
-    "revision": "72e2ea44db70d53ed015",
-    "url": "/airbnb_web/static/js/main.e81e6fd9.chunk.js"
+    "revision": "f0b742c6262606318a0d",
+    "url": "/airbnb_web/static/js/main.6b76031b.chunk.js"
   },
   {
     "revision": "d5f29053dda56253fe65",
