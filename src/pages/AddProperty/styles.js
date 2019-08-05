@@ -13,7 +13,7 @@ export const Image = styled.div`
   margin: 0.5rem;
 
   border-radius: 5px;
-  background-image: ${props => `url(${props.url})`};
+  background-image: ${props => `url("${props.url}")`};
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
