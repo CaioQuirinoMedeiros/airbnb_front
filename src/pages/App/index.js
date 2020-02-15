@@ -43,12 +43,12 @@ class Map extends Component {
     match: PropTypes.shape({
       url: PropTypes.string,
     }).isRequired,
-  };
+  }
 
   state = {
     viewport: {
-      latitude: -15.8808001,
-      longitude: -47.8116024,
+      latitude: -23.5508001,
+      longitude: -46.6316024,
       zoom: 12.8,
       bearing: 0,
       pitch: 0,
@@ -59,12 +59,22 @@ class Map extends Component {
     },
     properties: [],
     addPropertyOpen: false,
-  };
+  }
 
-  updatePropertiesLocalization = debounce(() => this.loadProperties(), 500);
+  updatePropertiesLocalization = debounce(() => this.loadProperties(), 500)
 
   async componentDidMount() {
     await this.loadProperties();
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        const { viewport } = this.state;
+        this.setState({
+          viewport: { ...viewport, latitude, longitude },
+        });
+      });
+    }
   }
 
   loadProperties = async () => {
@@ -94,25 +104,30 @@ class Map extends Component {
       console.log(err);
       toast.error('Error trying to load properties');
     }
-  };
+  }
 
   handleLogout = () => {
     const { history } = this.props;
 
     logout();
     history.push('/');
-  };
+  }
 
   renderActions = () => {
     const { filter } = this.state;
     return (
       <ButtonContainer>
-        <BigButton color="#fc6963" onClick={() => this.setState({ addPropertyOpen: true })}>
+        <BigButton
+          color="#fc6963"
+          onClick={() => this.setState({ addPropertyOpen: true })}
+        >
           <i className="fa fa-plus" />
         </BigButton>
 
         <Filter>
-          <span>{filter.max_price && intlMonetary.format(filter.max_price)}</span>
+          <span>
+            {filter.max_price && intlMonetary.format(filter.max_price)}
+          </span>
           <Range
             max={10000}
             step={100}
@@ -130,7 +145,7 @@ class Map extends Component {
         </BigButton>
       </ButtonContainer>
     );
-  };
+  }
 
   handleAddProperty = () => {
     const { match, history } = this.props;
@@ -139,8 +154,10 @@ class Map extends Component {
 
     this.setState({ addPropertyOpen: false });
 
-    history.push(`${match.url}/properties/add?latitude=${latitude}&longitude=${longitude}`);
-  };
+    history.push(
+      `${match.url}/properties/add?latitude=${latitude}&longitude=${longitude}`,
+    );
+  }
 
   renderPointReference = () => (
     <PointReference>
@@ -150,10 +167,12 @@ class Map extends Component {
         <Button color="red" onClick={this.handleAddProperty}>
           Right here
         </Button>
-        <Button onClick={() => this.setState({ addPropertyOpen: false })}>Cancel</Button>
+        <Button onClick={() => this.setState({ addPropertyOpen: false })}>
+          Cancel
+        </Button>
       </ButtonsWrapper>
     </PointReference>
-  );
+  )
 
   render() {
     const { containerWidth: width, containerHeight: height, match } = this.props;
@@ -171,7 +190,9 @@ class Map extends Component {
           }}
           onViewStateChange={this.updatePropertiesLocalization}
         >
-          {!addPropertyOpen && <Properties properties={properties} match={match} />}
+          {!addPropertyOpen && (
+            <Properties properties={properties} match={match} />
+          )}
         </MapGl>
 
         {this.renderActions()}
