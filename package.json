@@ -6,7 +6,7 @@
   "homepage": "https://caioquirinomedeiros.github.io/airbnb_web",
   "dependencies": {
     "@rocketseat/unform": "^1.4.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "classnames": "^2.2.6",
     "font-awesome": "^4.7.0",
     "gh-pages": "^2.0.1",
